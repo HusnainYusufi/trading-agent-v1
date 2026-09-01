@@ -5,6 +5,7 @@ import {
   ANALYSTS, BACKEND, Defaults, Provider, RunDoc, api, getToken,
 } from "@/lib/api";
 import VerdictCard from "@/components/Verdict";
+import TradePlanCard from "@/components/TradePlan";
 
 interface SymbolPreview { canonical: string; identity: Record<string, string>; last_close: number | null }
 interface AgentStatuses { [agent: string]: string }
@@ -213,6 +214,8 @@ export default function Dashboard() {
         <div className="space-y-3">
           <VerdictCard verdict={result.verdict} rating={result.rating} ticker={result.ticker}
             canonical={result.canonical} elapsed={result.elapsed} />
+          <TradePlanCard plan={result.trade_plan} runId={result.id}
+            onUpdated={(p) => setResult((r) => (r ? { ...r, trade_plan: p } : r))} />
           <Link href={`/runs/${result.id}`}
             className="inline-block text-sm text-emerald-400 hover:text-emerald-300">
             Open full report (all agents) →

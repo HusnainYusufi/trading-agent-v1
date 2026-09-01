@@ -50,12 +50,19 @@ export interface Verdict {
   direction: string; confidence: number; alignment: number; note: string;
   votes: { portfolio_manager: string; research_manager: string; trader: string };
 }
+export interface PriceLevel { price: number; basis: string }
+export interface TradePlan {
+  direction: string; horizon?: string | null;
+  entry: PriceLevel | null; entry_fallback: PriceLevel | null; stop_loss: PriceLevel | null;
+  take_profits: PriceLevel[]; risk_reward?: number[];
+  invalidation?: string | null; trigger?: string | null; sizing_note?: string | null;
+}
 export interface RunDoc {
   id: string; ticker: string; canonical: string | null; date: string; created_at: number;
   status: "running" | "done" | "error"; rating: string | null; direction: string | null;
   confidence: number | null; elapsed: number | null; error: string | null;
   provider: string; quick_model: string; deep_model: string; analysts: string[]; depth: number;
-  reports?: Record<string, string>; verdict?: Verdict | null;
+  reports?: Record<string, string>; verdict?: Verdict | null; trade_plan?: TradePlan | null;
 }
 export interface ScorecardEntry {
   date: string; ticker: string; rating: string;

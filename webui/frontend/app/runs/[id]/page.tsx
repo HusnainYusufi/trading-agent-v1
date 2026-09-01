@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { RunDoc, api } from "@/lib/api";
 import Markdown from "@/components/Markdown";
 import VerdictCard from "@/components/Verdict";
+import TradePlanCard from "@/components/TradePlan";
 
 const TAB_ORDER: [string, string][] = [
   ["final_trade_decision", "Final Decision"],
@@ -54,6 +55,10 @@ export default function RunDetail() {
       {run.status === "error" && <div className="text-sm text-rose-400 border border-rose-500/30 bg-rose-500/10 rounded-lg p-3">{run.error}</div>}
       {run.verdict && run.rating && (
         <VerdictCard verdict={run.verdict} rating={run.rating} ticker={run.ticker} canonical={run.canonical} elapsed={run.elapsed} />
+      )}
+      {run.status === "done" && (
+        <TradePlanCard plan={run.trade_plan} runId={run.id}
+          onUpdated={(p) => setRun((r) => (r ? { ...r, trade_plan: p } : r))} />
       )}
 
       {tabs.length > 0 && (

@@ -81,7 +81,7 @@ class RunManager:
             "depth": params["depth"],
             "language": params.get("language", "English"),
             "rating": None, "direction": None, "confidence": None,
-            "elapsed": None, "error": None, "reports": {}, "verdict": None,
+            "elapsed": None, "error": None, "reports": {}, "verdict": None, "trade_plan": None,
         }
         run = Run(doc)
         with self.lock:
@@ -156,6 +156,10 @@ class RunManager:
             rating = ta.process_signal(final_state["final_trade_decision"])
             report_dir = Path(config["results_dir"]) / "webui" / f"{doc['id']}"
             ta.save_reports(final_state, doc["ticker"], save_path=report_dir)
+
+            run.emit("stage", label="Extracting trade plan")
+            from tradeplan import extract_trade_plan
+            doc["trade_plan"] = extract_trade_plan(doc)
 
             verdict = compute_verdict(rating, final_state)
             doc.update(status="done", rating=rating, elapsed=round(time.time() - t0, 1),

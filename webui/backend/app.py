@@ -223,6 +223,24 @@ async def run_events(run_id: str):
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
+@app.post("/api/runs/{run_id}/tradeplan", dependencies=[Depends(auth)])
+def make_trade_plan(run_id: str):
+    """Backfill a trade plan for a completed run that predates the extractor."""
+    live = MANAGER.get(run_id)
+    doc = live.doc if live else store.get_run(run_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail="run not found")
+    if doc.get("status") != "done":
+        raise HTTPException(status_code=400, detail="run is not completed")
+    from tradeplan import extract_trade_plan
+    plan = extract_trade_plan(doc)
+    if plan is None:
+        raise HTTPException(status_code=502, detail="trade-plan extraction failed - check the provider key and try again")
+    doc["trade_plan"] = plan
+    store.save_run(doc)
+    return {"trade_plan": plan}
+
+
 # --- scorecard --------------------------------------------------------------
 
 @app.get("/api/scorecard", dependencies=[Depends(auth)])
