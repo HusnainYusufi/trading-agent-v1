@@ -2,3 +2,7 @@ frontend/node_modules/
 frontend/.next/
 frontend/next-env.d.ts
 __pycache__/
+
+# Re-include the frontend API client: the repo root .gitignore excludes lib/
+# (Python-template rule), which would silently drop frontend/lib/.
+!frontend/lib/

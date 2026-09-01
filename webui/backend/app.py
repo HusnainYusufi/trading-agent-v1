@@ -25,9 +25,13 @@ from runner import MANAGER  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI(title="TradingAgents UI")
+_origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
+# Extra origins for deployments where the frontend is served from another host
+# (comma-separated). Same-origin reverse-proxy setups need no CORS at all.
+_origins += [o.strip() for o in __import__("os").environ.get("WEBUI_ALLOWED_ORIGINS", "").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=_origins,
     allow_methods=["*"], allow_headers=["*"],
 )
 
